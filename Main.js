@@ -5,6 +5,11 @@ var escaladoMinimo = 1;
 
 // Capas
 var gameLayer;
+// Dimensiones
+var salasx = 9;
+var salasy = 7;
+var ancho = 3;
+var alto = 3;
 
 // Controles
 var controles = {}; // {} Crea un objeto

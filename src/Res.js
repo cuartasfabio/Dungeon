@@ -2,6 +2,8 @@
 var imagenes = {
     jugador : "res/jugador.png",
     fondo : "res/fondo.png",
+    suelo : "res/suelo.png",
+    pared : "res/pared.png",
     enemigo : "res/enemigo.png",
     enemigo_movimiento : "res/enemigo_movimiento.png",
     disparo_jugador : "res/disparo_jugador.png",
