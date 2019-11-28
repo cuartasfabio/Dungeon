@@ -1,3 +1,0 @@
-class Bomba extends Modelo{
-
-}
