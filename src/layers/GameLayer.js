@@ -9,9 +9,18 @@ class GameLayer extends Layer {
         //this.jugador = new Jugador(50, 50);
         this.fondo = new Fondo(imagenes.fondo,640*0.5,480*0.5);
 
-        //Matriz de salas
+
+        //Rutas de las salas a cargar
+        this.txtSalas = ["res/sala0.txt","res/sala1.txt","res/sala2.txt"];
+        //Lista de salas para saber si las salas se han creado ya o no.
+        this.listaSalas = [];
+        for(var i = 0; i < this.txtSalas.length; i++){
+            this.listaSalas[i] = null;
+        }
+
+        //Matriz de salas asociadas al mapa
         this.salas = [];
-        for(var i = 0; i < salasy; i++){
+        for(var i = 0; i < alto; i++){
             this.salas[i] = [];
         }
 
@@ -22,9 +31,10 @@ class GameLayer extends Layer {
         //this.enemigos.push(new Enemigo(300,50));
         //this.enemigos.push(new Enemigo(350,200));
 
-        //this.disparosJugador = []
+        //this.disparosJugador = [];
 
         this.cargarMapa();
+        this.asignarSalas();
     }
 
     actualizar (){
@@ -114,7 +124,6 @@ class GameLayer extends Layer {
         var ly = salasy * alto + alto +1;
         for(var i = 0; i < ly; i++){
             for(var j = 0; j < lx; j++){
-                //this.cargarSala("res/sala0.txt",i,j);
                 if(i==0 || j==0 || i== ly || j== lx || (i%(salasy+1))==0 || (j%(salasx+1))==0){
                     var pared = new Fondo(imagenes.pared,16 + 16*j,16 + 16*i);
                     this.tilesParedYSuelo.push(pared);
@@ -125,33 +134,62 @@ class GameLayer extends Layer {
             }
         }
     }
-    cargarSala(ruta,iniciox,inicioy){
-        var fichero = new XMLHttpRequest();
-        fichero.open("GET",ruta,false);
 
-        fichero.onreadystatechange = function(){
-            var texto = fichero.responseText;
-            var lineas = texto.split('\n');
-            var xSala = lineas[0].length *16 *iniciox;
-            var ySala = lineas.length *16 *inicioy;
-            for(var i=0;i<lineas.length;i++){
-                var linea = lineas[i];
-                for(var j=0;j<linea.length;j++){
-                    var simbolo = linea[j];
-                    var x = xSala + 16 + j * 16;
-                    var y = ySala +  16 + i * 16;
-                    this.cargarObjetoMapa(simbolo,x,y);
-                }
+    asignarSalas(){
+        //rellena la matriz de salas que representa el suelo del nivel con un patron de sala aleatorio
+        for(var i = 0; i < this.salas.length; i++){
+            for(var j = 0; j < this.salas[0].length; j++){
+                //coje una ruta aleatoria para crear la sala
+                var indiceRandom = Math.floor(Math.random() * (this.txtSalas.length-1));
+                //crea la sala y la asocia a la matriz con el indice de ruta y su posicion
+                this.salas[i][j] = crearSala(indiceRandom,i,j);
             }
-        }.bind(this);
+        }
 
-        fichero.send();
     }
 
-    cargarObjetoMapa(simbolo,x,y){
+    crearSala(indiceRuta,i,j){
+        var sala;
+        //Si nunca se ha creado antes la sala, la crea usando el fichero
+        if(this.listaSalas[indiceRuta] == null) {
+            var ruta = this.txtSalas[indiceRuta];
+
+            var fichero = new XMLHttpRequest();
+            fichero.open("GET", ruta, false);
+            fichero.onreadystatechange = function () {
+                var texto = fichero.responseText;
+                var lineas = texto.split('\n');
+                //var xSala = lineas[0].length *16 *iniciox;
+                //var ySala = lineas.length *16 *inicioy;
+                sala = new Sala();
+                for (var i = 0; i < lineas.length; i++) {
+                    var linea = lineas[i];
+                    for (var j = 0; j < linea.length; j++) {
+                        var simbolo = linea[j];
+                        this.cargarObjetoSala(sala, simbolo, i, j);
+                    }
+                }
+                this.listaSalas.push(sala);
+            }.bind(this);
+            fichero.send();
+
+        } else {    //Si ya ha sido creada , hace una copia del contenido de la ya creada a esta
+            //creo una nueva sala con en sus correspondientes coordenadas
+            sala = new Sala(i,j);
+            //su matrizSala será la misma que la sala ya creada con este fichero
+
+        }
+
+
+        //Marca la ruta como usada
+        this.listaSalas[indiceRuta] = true;
+
+    }
+
+    cargarObjetoSala(sala,simbolo,i,j){
         switch(simbolo){
-            case "0":
-                var suelo = new Fondo(imagenes.suelo,x,y);
+            case "1":
+                var pared = new pared(imagenes.pared,j * 16,i * 16);
                 this.tilesSuelo.push(suelo);
                 break;
         }

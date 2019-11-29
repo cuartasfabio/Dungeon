@@ -1,14 +1,8 @@
 // Lista re recursos a precargar
 var imagenes = {
-    jugador : "res/jugador.png",
     fondo : "res/fondo.png",
     suelo : "res/suelo.png",
     pared : "res/pared.png",
-    enemigo : "res/enemigo.png",
-    enemigo_movimiento : "res/enemigo_movimiento.png",
-    disparo_jugador : "res/disparo_jugador.png",
-    disparo_enemigo : "res/disparo_enemigo.png",
-    icono_puntos : "res/icono_puntos.png",
 };
 
 var rutasImagenes = Object.values(imagenes);
