@@ -3,6 +3,8 @@ var canvas = document.getElementById("canvas");
 var contexto = canvas.getContext("2d");
 var escaladoMinimo = 1;
 
+
+
 // Capas
 var gameLayer;
 // Dimensiones

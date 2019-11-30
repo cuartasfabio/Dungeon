@@ -9,10 +9,10 @@ class Modelo {
         this.alto = this.imagen.height;
     }
 
-    dibujar (){
+    dibujar (salax = 0, salay = 0){
         contexto.drawImage(this.imagen,
-            this.x - this.ancho /2,
-            this.y - this.alto /2);
+             salax + this.x - this.ancho /2,
+             salay + this.y - this.alto /2);
     }
 
     colisiona (modelo){

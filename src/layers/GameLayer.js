@@ -84,6 +84,12 @@ class GameLayer extends Layer {
         for (var i=0; i < this.tilesParedYSuelo.length; i++){
             this.tilesParedYSuelo[i].dibujar();
         }
+
+        for(var i = 0; i < alto; i++){
+            for(var j = 0; j < ancho; j++){
+                this.salas[i][j].dibujar();
+            }
+        }
     }
 
     procesarControles( ){
@@ -119,17 +125,23 @@ class GameLayer extends Layer {
 
     }
 
+    //Carga los tiles del mapa, según las dimensiones de las salas y la cantidad de estas,
+    //especificadas en el Main por: ancho, alto, salasx y salasy.
     cargarMapa(){
-        var lx = salasx * ancho + ancho +1;
-        var ly = salasy * alto + alto +1;
-        for(var i = 0; i < ly; i++){
-            for(var j = 0; j < lx; j++){
-                if(i==0 || j==0 || i== ly || j== lx || (i%(salasy+1))==0 || (j%(salasx+1))==0){
-                    var pared = new Fondo(imagenes.pared,16 + 16*j,16 + 16*i);
+        //Anchura y altura TOTALES del nivel actual (suma de la anchura y altura respectivas de todas las salas
+        // y los espacios entre ellas y bordes).
+        var longitudTotalX = salasx * ancho + ancho +1;
+        var longitudTotalY = salasy * alto + alto +1;
+        for(var i = 0; i < longitudTotalY; i++){
+            for(var j = 0; j < longitudTotalX; j++){
+                //Si es la primera columna || la primera fila || la ultima fila || la separacion horiz. de 2 salas || la separacion vert. de 2 salas
+                if(i==0 || j==0 || i== longitudTotalY || j== longitudTotalX || (i%(salasy+1))==0 || (j%(salasx+1))==0){
+                    //Ahí va una pared
+                    var pared = new Fondo(imagenes.pared,64 + 16*j,64 + 16*i);
                     this.tilesParedYSuelo.push(pared);
-                } else {
-                    var suelo = new Fondo(imagenes.suelo,16 + 16*j,16 + 16*i);
-                    this.tilesParedYSuelo.push(suelo);
+                } else { //Si no hay pared hay suelo
+                    //var suelo = new Fondo(imagenes.suelo,16 + 16*j,16 + 16*i);
+                    //this.tilesParedYSuelo.push(suelo);
                 }
             }
         }
@@ -138,22 +150,22 @@ class GameLayer extends Layer {
     asignarSalas(){
         //rellena la matriz de salas que representa el suelo del nivel con un patron de sala aleatorio
         for(var i = 0; i < this.salas.length; i++){
-            for(var j = 0; j < this.salas[0].length; j++){
+            for(var j = 0; j < ancho; j++){
                 //coje una ruta aleatoria para crear la sala
-                var indiceRandom = Math.floor(Math.random() * (this.txtSalas.length-1));
+                var indiceRandom = Math.floor(Math.random() * (this.txtSalas.length));
                 //crea la sala y la asocia a la matriz con el indice de ruta y su posicion
-                this.salas[i][j] = crearSala(indiceRandom,i,j);
+                this.salas[i][j] = this.crearSala(indiceRandom,j,i);
             }
         }
-
     }
 
-    crearSala(indiceRuta,i,j){
+    crearSala(indiceRuta,x,y){
         var sala;
         //Si nunca se ha creado antes la sala, la crea usando el fichero
         if(this.listaSalas[indiceRuta] == null) {
             var ruta = this.txtSalas[indiceRuta];
 
+            //Lee el fichero de la sala
             var fichero = new XMLHttpRequest();
             fichero.open("GET", ruta, false);
             fichero.onreadystatechange = function () {
@@ -161,36 +173,47 @@ class GameLayer extends Layer {
                 var lineas = texto.split('\n');
                 //var xSala = lineas[0].length *16 *iniciox;
                 //var ySala = lineas.length *16 *inicioy;
-                sala = new Sala();
+                //Crea la sala en su posicion
+                sala = new Sala(x,y);
                 for (var i = 0; i < lineas.length; i++) {
                     var linea = lineas[i];
                     for (var j = 0; j < linea.length; j++) {
                         var simbolo = linea[j];
+                        //Va añadiendo a la matriz de la sala los objetos que lee
+                        //(en su posicion relativa en la sala).
                         this.cargarObjetoSala(sala, simbolo, i, j);
                     }
                 }
-                this.listaSalas.push(sala);
+                //Marco la sala como usada
+                this.listaSalas[indiceRuta] = sala;
             }.bind(this);
             fichero.send();
 
         } else {    //Si ya ha sido creada , hace una copia del contenido de la ya creada a esta
             //creo una nueva sala con en sus correspondientes coordenadas
-            sala = new Sala(i,j);
-            //su matrizSala será la misma que la sala ya creada con este fichero
-
+            sala = new Sala(x,y);
+            //Su matrizSala será la misma que la sala ya creada con este fichero.
+            //Hago uso de la libreria lodash para poder clonar el array bidimensional
+            //de la sala sin tener que implementar varias funciones extra para recorerlo,
+            //copiar cada atributo de cada objeto que halla dentro...
+            //Si no lo clono todas las salas iguales referenciarían a la misma matriz.
+            sala.matrizSala = _.cloneDeep(this.listaSalas[indiceRuta].matrizSala);
         }
 
-
-        //Marca la ruta como usada
-        this.listaSalas[indiceRuta] = true;
-
+        return sala;
     }
 
     cargarObjetoSala(sala,simbolo,i,j){
         switch(simbolo){
             case "1":
-                var pared = new pared(imagenes.pared,j * 16,i * 16);
-                this.tilesSuelo.push(suelo);
+                var pared = new Fondo(imagenes.pared,j * 16,i * 16);
+                //7pared.y = pared.y - pared.alto/2;
+                sala.matrizSala[i][j] = pared;
+                break;
+            case "0":
+                var suelo = new Fondo(imagenes.suelo,j * 16,i * 16);
+                //suelo.y = suelo.y - suelo.alto/2;
+                sala.matrizSala[i][j] = suelo;
                 break;
         }
     }
