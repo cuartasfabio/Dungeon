@@ -134,17 +134,33 @@ class GameLayer extends Layer {
         var longitudTotalY = salasy * alto + alto +1;
         for(var i = 0; i < longitudTotalY; i++){
             for(var j = 0; j < longitudTotalX; j++){
-                //Si es la primera columna || la primera fila || la ultima fila || la separacion horiz. de 2 salas || la separacion vert. de 2 salas
-                if(i==0 || j==0 || i== longitudTotalY || j== longitudTotalX || (i%(salasy+1))==0 || (j%(salasx+1))==0){
-                    //Ahí va una pared
-                    var pared = new Fondo(imagenes.pared,64 + 16*j,64 + 16*i);
-                    this.tilesParedYSuelo.push(pared);
+                //Si es la primera columna || la primera fila || la ultima fila
+                if(i==0 || j==0 || i== longitudTotalY-1 || j== longitudTotalX-1
+                    // || la separacion horiz. de 2 salas menos el sitio donde pueda ir una puerta
+                    || ((i%(salasy+1))==0 && !this.puedeIrPuerta(j,longitudTotalX,salasx))
+                    // || la separacion vert. de 2 salas menos el sitio donde pueda ir una puerta
+                    || ((j%(salasx+1))==0 && !this.puedeIrPuerta(i,longitudTotalY,salasy))){
+
+                        //Ahí va una pared
+                        var pared = new Fondo(imagenes.pared, 64 + 16 * j, 64 + 16 * i);
+                        this.tilesParedYSuelo.push(pared);
+
                 } else { //Si no hay pared hay suelo
                     //var suelo = new Fondo(imagenes.suelo,16 + 16*j,16 + 16*i);
                     //this.tilesParedYSuelo.push(suelo);
                 }
             }
         }
+    }
+
+/*|| ((i%(salasy+1))==0 && !this.puedeIrPuerta(j,longitudTotalX,salasx))
+|| ((j%(salasx+1))==0 && !this.puedeIrPuerta(i,longitudTotalY,salasy))){*/
+
+    puedeIrPuerta(coord,total,lado){
+        for(var i = Math.floor(lado/2) +1; i < total; i+=(lado+1)){
+            if(coord == i) { return true; }
+        }
+        return false;
     }
 
     asignarSalas(){
