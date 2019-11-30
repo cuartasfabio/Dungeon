@@ -11,7 +11,7 @@ class GameLayer extends Layer {
 
 
         //Rutas de las salas a cargar
-        this.txtSalas = ["res/sala0.txt","res/sala1.txt","res/sala2.txt"];
+        this.txtSalas = ["res/sala0.txt","res/sala1.txt","res/sala2.txt","res/sala3.txt","res/sala4.txt"];
         //Lista de salas para saber si las salas se han creado ya o no.
         this.listaSalas = [];
         for(var i = 0; i < this.txtSalas.length; i++){
