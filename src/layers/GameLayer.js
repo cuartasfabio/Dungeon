@@ -24,8 +24,9 @@ class GameLayer extends Layer {
             this.salas[i] = [];
         }
 
-        this.tilesParedYSuelo = [];
-        //this.tilesPared = [];
+        this.paredes = [];
+        this.tilesSuelos = [];
+        this.puertas = [];
 
         //this.enemigos = [];
         //this.enemigos.push(new Enemigo(300,50));
@@ -81,8 +82,17 @@ class GameLayer extends Layer {
         //     this.enemigos[i].dibujar();
         // }
 
-        for (var i=0; i < this.tilesParedYSuelo.length; i++){
-            this.tilesParedYSuelo[i].dibujar();
+        //Dibuja tiles del suelo
+        for (var i=0; i < this.tilesSuelos.length; i++){
+            this.tilesSuelos[i].dibujar();
+        }
+        //Dibuja paredes
+        for (var i=0; i < this.paredes.length; i++){
+            this.paredes[i].dibujar();
+        }
+        //Dibuja puertas
+        for (var i=0; i < this.puertas.length; i++){
+            this.puertas[i].dibujar();
         }
 
         for(var i = 0; i < alto; i++){
@@ -139,15 +149,26 @@ class GameLayer extends Layer {
                     // || la separacion horiz. de 2 salas menos el sitio donde pueda ir una puerta
                     || ((i%(salasy+1))==0 && !this.puedeIrPuerta(j,longitudTotalX,salasx))
                     // || la separacion vert. de 2 salas menos el sitio donde pueda ir una puerta
-                    || ((j%(salasx+1))==0 && !this.puedeIrPuerta(i,longitudTotalY,salasy))){
+                    || ((j%(salasx+1))==0 && !this.puedeIrPuerta(i,longitudTotalY,salasy))) {
 
-                        //Ahí va una pared
-                        var pared = new Fondo(imagenes.pared, 64 + 16 * j, 64 + 16 * i);
-                        this.tilesParedYSuelo.push(pared);
+                    //Ahí va una pared
+                    var pared = new Pared(imagenes.pared, 64 + 16 * j, 64 + 16 * i);
+                    this.paredes.push(pared);
+
+                } else if((i%(salasy+1))==0 && this.puedeIrPuerta(j,longitudTotalX,salasx) || ((j%(salasx+1))==0 && this.puedeIrPuerta(i,longitudTotalY,salasy))){
+                    var suelo = new Fondo(imagenes.suelo,64 + 16*j,64 + 16*i);
+                    this.tilesSuelos.push(suelo);
+
+                    var puerta = new Puerta(imagenes.puerta_cerrada,64 + 16*j,64 + 16*i);
+
+                    if((j%(salasx+1))==0){
+                        puerta.imagen = cache[imagenes.puerta_cerrada_v];
+                    }
+                    this.puertas.push(puerta);
 
                 } else { //Si no hay pared hay suelo
-                    //var suelo = new Fondo(imagenes.suelo,16 + 16*j,16 + 16*i);
-                    //this.tilesParedYSuelo.push(suelo);
+                    var suelo = new Fondo(imagenes.suelo,64 + 16*j,64 + 16*i);
+                    this.tilesSuelos.push(suelo);
                 }
             }
         }
@@ -227,9 +248,9 @@ class GameLayer extends Layer {
                 sala.matrizSala[i][j] = pared;
                 break;
             case "0":
-                var suelo = new Fondo(imagenes.suelo,j * 16,i * 16);
+                //var suelo = new Fondo(imagenes.suelo,j * 16,i * 16);
                 //suelo.y = suelo.y - suelo.alto/2;
-                sala.matrizSala[i][j] = suelo;
+                //sala.matrizSala[i][j] = suelo;
                 break;
         }
     }

@@ -23,14 +23,6 @@ class Sala {
 
     }
 
-    /*colocarInterior(){
-        for(var i = 0; i < salasy; i++){
-            for(var j = 0; j < salasx; j++){
-                this.matrizSala[i][j].x += this.x;
-                this.matrizSala[i][j].y += this.y;
-            }
-        }
-    }*/
 
     //El metodo dibujar dibuja todos los objetos contenidos en la sala
     dibujar(){
@@ -39,7 +31,7 @@ class Sala {
             for(var j = 0; j < salasx; j++){
                 //Al metodo dibujar de cada objeto se le pasan las coordenadas de la sala
                 //para poder sumarlas a su "x" e "y" relativas al origen de la sala.
-                this.matrizSala[i][j].dibujar(this.x,this.y);
+                if(this.matrizSala[i][j] != null) this.matrizSala[i][j].dibujar(this.x,this.y);
             }
         }
     }
