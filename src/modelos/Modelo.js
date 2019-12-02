@@ -12,8 +12,8 @@ class Modelo {
 
     dibujar (salax = 0, salay = 0){
         contexto.drawImage(this.imagen,
-             salax + this.x - this.ancho /2,
-             salay + this.y - this.alto /2);
+             this.x - this.ancho /2,
+             this.y - this.alto /2);
     }
 
     colisiona (modelo){

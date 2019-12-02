@@ -6,7 +6,11 @@ class GameLayer extends Layer {
     }
 
     iniciar() {
-        //this.jugador = new Jugador(50, 50);
+
+        //this.jugador en cargarJugador()
+
+        this.espacio = new Espacio(0);
+
         this.fondo = new Fondo(imagenes.fondo,640*0.5,480*0.5);
 
 
@@ -36,10 +40,14 @@ class GameLayer extends Layer {
 
         this.cargarMapa();
         this.asignarSalas();
+        this.cargarJugador();
     }
 
     actualizar (){
-        // this.jugador.actualizar();
+
+        this.espacio.actualizar();
+
+        this.jugador.actualizar();
         // for (var i=0; i < this.enemigos.length; i++){
         //     this.enemigos[i].actualizar();
         // }
@@ -74,18 +82,23 @@ class GameLayer extends Layer {
 
     dibujar (){
         this.fondo.dibujar();
+
         // for (var i=0; i < this.disparosJugador.length; i++) {
         //     this.disparosJugador[i].dibujar();
-        // }
-        // this.jugador.dibujar();
-        // for (var i=0; i < this.enemigos.length; i++){
-        //     this.enemigos[i].dibujar();
         // }
 
         //Dibuja tiles del suelo
         for (var i=0; i < this.tilesSuelos.length; i++){
             this.tilesSuelos[i].dibujar();
         }
+
+        this.jugador.dibujar();
+
+        // for (var i=0; i < this.enemigos.length; i++){
+        //     this.enemigos[i].dibujar();
+        // }
+
+
         //Dibuja paredes
         for (var i=0; i < this.paredes.length; i++){
             this.paredes[i].dibujar();
@@ -111,27 +124,28 @@ class GameLayer extends Layer {
         //     }
         // }
         //
-        // // Eje X
-        // if ( controles.moverX > 0 ){
-        //     this.jugador.moverX(1);
-        //
-        // }else if ( controles.moverX < 0){
-        //     this.jugador.moverX(-1);
-        //
-        // } else {
-        //     this.jugador.moverX(0);
-        // }
-        //
-        // // Eje Y
-        // if ( controles.moverY > 0 ){
-        //     this.jugador.moverY(-1);
-        //
-        // } else if ( controles.moverY < 0 ){
-        //     this.jugador.moverY(1);
-        //
-        // } else {
-        //     this.jugador.moverY(0);
-        // }
+
+        // Eje X
+        if ( controles.moverX > 0 ){
+            this.jugador.moverX(1);
+
+        }else if ( controles.moverX < 0){
+            this.jugador.moverX(-1);
+
+        } else {
+            this.jugador.moverX(0);
+        }
+
+        // Eje Y
+        if ( controles.moverY > 0 ){
+            this.jugador.moverY(-1);
+
+        } else if ( controles.moverY < 0 ){
+            this.jugador.moverY(1);
+
+        } else {
+            this.jugador.moverY(0);
+        }
 
     }
 
@@ -153,6 +167,7 @@ class GameLayer extends Layer {
 
                     //Ahí va una pared
                     var pared = new Pared(imagenes.pared, 64 + 16 * j, 64 + 16 * i);
+                    this.espacio.agregarCuerpoEstatico(pared);
                     this.paredes.push(pared);
 
                 } else if((i%(salasy+1))==0 && this.puedeIrPuerta(j,longitudTotalX,salasx) || ((j%(salasx+1))==0 && this.puedeIrPuerta(i,longitudTotalY,salasy))){
@@ -160,11 +175,12 @@ class GameLayer extends Layer {
                     this.tilesSuelos.push(suelo);
 
                     var puerta = new Puerta(imagenes.puerta_cerrada,64 + 16*j,64 + 16*i);
+                    this.espacio.agregarCuerpoEstatico(puerta);
+                    this.puertas.push(puerta);
 
                     if((j%(salasx+1))==0){
                         puerta.imagen = cache[imagenes.puerta_cerrada_v];
                     }
-                    this.puertas.push(puerta);
 
                 } else { //Si no hay pared hay suelo
                     var suelo = new Fondo(imagenes.suelo,64 + 16*j,64 + 16*i);
@@ -174,8 +190,6 @@ class GameLayer extends Layer {
         }
     }
 
-/*|| ((i%(salasy+1))==0 && !this.puedeIrPuerta(j,longitudTotalX,salasx))
-|| ((j%(salasx+1))==0 && !this.puedeIrPuerta(i,longitudTotalY,salasy))){*/
 
     puedeIrPuerta(coord,total,lado){
         for(var i = Math.floor(lado/2) +1; i < total; i+=(lado+1)){
@@ -199,7 +213,7 @@ class GameLayer extends Layer {
     crearSala(indiceRuta,x,y){
         var sala;
         //Si nunca se ha creado antes la sala, la crea usando el fichero
-        if(this.listaSalas[indiceRuta] == null) {
+        // if(this.listaSalas[indiceRuta] == null) {
             var ruta = this.txtSalas[indiceRuta];
 
             //Lee el fichero de la sala
@@ -226,33 +240,49 @@ class GameLayer extends Layer {
             }.bind(this);
             fichero.send();
 
-        } else {    //Si ya ha sido creada , hace una copia del contenido de la ya creada a esta
-            //creo una nueva sala con en sus correspondientes coordenadas
-            sala = new Sala(x,y);
-            //Su matrizSala será la misma que la sala ya creada con este fichero.
-            //Hago uso de la libreria lodash para poder clonar el array bidimensional
-            //de la sala sin tener que implementar varias funciones extra para recorerlo,
-            //copiar cada atributo de cada objeto que halla dentro...
-            //Si no lo clono todas las salas iguales referenciarían a la misma matriz.
-            sala.matrizSala = _.cloneDeep(this.listaSalas[indiceRuta].matrizSala);
-        }
+        // } else {    //Si ya ha sido creada , hace una copia del contenido de la ya creada a esta
+        //     //creo una nueva sala con en sus correspondientes coordenadas
+        //     sala = new Sala(x,y);
+        //     //Su matrizSala será la misma que la sala ya creada con este fichero.
+        //     //Hago uso de la libreria lodash para poder clonar el array bidimensional
+        //     //de la sala sin tener que implementar varias funciones extra para recorerlo,
+        //     //copiar cada atributo de cada objeto que halla dentro...
+        //     //Si no lo clono todas las salas iguales referenciarían a la misma matriz.
+        //     sala.matrizSala = _.cloneDeep(this.listaSalas[indiceRuta].matrizSala);
+        //     sala.playerx = this.listaSalas[indiceRuta].playerx;
+        //     sala.playery = this.listaSalas[indiceRuta].playery;
+        // }
 
+        sala.actualizarSala();
         return sala;
     }
 
     cargarObjetoSala(sala,simbolo,i,j){
         switch(simbolo){
             case "1":
-                var pared = new Fondo(imagenes.pared,j * 16,i * 16);
+                var pared = new Pared(imagenes.pared,j * 16,i * 16);
                 //7pared.y = pared.y - pared.alto/2;
+                this.espacio.agregarCuerpoEstatico(pared);
                 sala.matrizSala[i][j] = pared;
+                this.paredes.push(pared);
                 break;
             case "0":
                 //var suelo = new Fondo(imagenes.suelo,j * 16,i * 16);
                 //suelo.y = suelo.y - suelo.alto/2;
                 //sala.matrizSala[i][j] = suelo;
                 break;
+            case "J":
+                sala.playerx = j * 16;
+                sala.playery = i * 16;
+                break;
         }
+    }
+
+    cargarJugador(){
+        //var salaRandom = this.salas[Math.random()*(this.salas.length-1)][Math.random()*(this.salas.length-1)];
+        var salaRandom = this.salas[Math.floor(Math.random()*(alto))][Math.floor(Math.random()*(ancho))];
+        this.jugador = new Jugador( salaRandom.x + salaRandom.playerx,salaRandom.y + salaRandom.playery);
+        this.espacio.agregarCuerpoDinamico(this.jugador);
     }
 
 }

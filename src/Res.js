@@ -4,6 +4,7 @@ var imagenes = {
     fondo : "res/fondo.png",
     suelo : "res/suelo.png",
     pared : "res/pared.png",
+    jugador : "res/jugador.png",
     puerta_cerrada : "res/puerta_cerrada.png",
     puerta_abierta : "res/puerta_abierta.png",
     puerta_cerrada_v : "res/puerta_cerrada_v.png",

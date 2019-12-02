@@ -12,6 +12,10 @@ class Sala {
         this.este = false;
         this.oeste = false;
 
+        //Posible posicion de spawn del jugador
+        this.playerx = 0;
+        this.playery = 0;
+
         //Inicializacion de la matriz de contenido de la sall
         this.matrizSala = [];
         for(var i = 0; i < salasy; i++){
@@ -23,6 +27,16 @@ class Sala {
 
     }
 
+    actualizarSala(){
+        for(var i = 0; i < salasy; i++){
+            for(var j = 0; j < salasx; j++){
+                if(this.matrizSala[i][j] != null) {
+                    this.matrizSala[i][j].x += this.x;
+                    this.matrizSala[i][j].y += this.y;
+                }
+            }
+        }
+    }
 
     //El metodo dibujar dibuja todos los objetos contenidos en la sala
     dibujar(){
