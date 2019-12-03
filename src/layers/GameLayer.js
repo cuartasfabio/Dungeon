@@ -48,9 +48,13 @@ class GameLayer extends Layer {
         this.espacio.actualizar();
 
         this.jugador.actualizar();
-        // for (var i=0; i < this.enemigos.length; i++){
-        //     this.enemigos[i].actualizar();
-        // }
+        for (var i=0; i < this.puertas.length; i++){
+            this.puertas[i].actualizar();
+            if(this.puertas[i].estaAbierta){
+                this.espacio.eliminarCuerpoEstatico(this.puertas[i]);
+                this.espacio.agregarCuerpoDinamico(this.puertas[i]);
+            }
+        }
         // for (var i=0; i < this.disparosJugador.length; i++) {
         //     this.disparosJugador[i].actualizar();
         // }
@@ -171,15 +175,22 @@ class GameLayer extends Layer {
                     this.paredes.push(pared);
 
                 } else if((i%(salasy+1))==0 && this.puedeIrPuerta(j,longitudTotalX,salasx) || ((j%(salasx+1))==0 && this.puedeIrPuerta(i,longitudTotalY,salasy))){
-                    var suelo = new Fondo(imagenes.suelo,64 + 16*j,64 + 16*i);
-                    this.tilesSuelos.push(suelo);
+                    //Puede haber puerta ente salas (o no).
+                    if(Math.random() >= 0.3) {
+                        var suelo = new Fondo(imagenes.suelo, 64 + 16 * j, 64 + 16 * i);
+                        this.tilesSuelos.push(suelo);
 
-                    var puerta = new Puerta(imagenes.puerta_cerrada,64 + 16*j,64 + 16*i);
-                    this.espacio.agregarCuerpoEstatico(puerta);
-                    this.puertas.push(puerta);
+                        var puerta = new Puerta(Math.random() >= 0.75, imagenes.puerta_cerrada, 64 + 16 * j, 64 + 16 * i);
+                        this.espacio.agregarCuerpoEstatico(puerta);
+                        this.puertas.push(puerta);
 
-                    if((j%(salasx+1))==0){
-                        puerta.imagen = cache[imagenes.puerta_cerrada_v];
+                        if ((j % (salasx + 1)) == 0) {
+                            puerta.imagen = cache[imagenes.puerta_cerrada_v];
+                        }
+                    } else {
+                        var pared = new Pared(imagenes.pared, 64 + 16 * j, 64 + 16 * i);
+                        this.espacio.agregarCuerpoEstatico(pared);
+                        this.paredes.push(pared);
                     }
 
                 } else { //Si no hay pared hay suelo
