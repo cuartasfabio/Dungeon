@@ -6,6 +6,7 @@ var imagenes = {
     pared : "res/pared.png",
     jugador : "res/jugador.png",
     escaleras : "res/escaleras.png",
+    bomba : "res/bomba.png",
     puerta_cerrada : "res/puerta_cerrada.png",
     puerta_abierta : "res/puerta_abierta.png",
     puerta_cerrada_v : "res/puerta_cerrada_v.png",

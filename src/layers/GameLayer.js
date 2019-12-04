@@ -29,8 +29,11 @@ class GameLayer extends Layer {
         }
 
         this.paredes = [];
+        this.paredesFalsas = [];
         this.tilesSuelos = [];
         this.puertas = [];
+
+        this.bombas = [];
 
         //this.enemigos = [];
         //this.enemigos.push(new Enemigo(300,50));
@@ -46,6 +49,7 @@ class GameLayer extends Layer {
 
     actualizar (){
 
+        //Pasar de nivel
         if ( this.escaleras.colisiona(this.jugador)){
             nivelActual++;
             if (nivelActual > nivelMaximo){
@@ -54,9 +58,13 @@ class GameLayer extends Layer {
             this.iniciar();
         }
 
+        //Actualiza las fisicas del espacio
         this.espacio.actualizar();
 
+        //Actualiza el jugador
         this.jugador.actualizar();
+
+        //Abrir las puertas
         for (var i=0; i < this.puertas.length; i++){
             this.puertas[i].actualizar();
             if(this.puertas[i].estaAbierta){
@@ -64,6 +72,30 @@ class GameLayer extends Layer {
                 this.espacio.agregarCuerpoDinamico(this.puertas[i]);
             }
         }
+
+
+
+
+        for(var i = 0; i < this.bombas.length; i++){
+            //Actualiza las bombas que esten activas
+            this.bombas[i].actualizar();
+            //Si explota la bomba
+            if(this.bombas[i].explotado){
+                for(var j = 0; j < this.paredesFalsas.length; j++){
+                    if(Math.abs(this.bombas[i].x - this.paredesFalsas[j].x) < 28 && Math.abs(this.bombas[i].y - this.paredesFalsas[j].y) < 28){
+                        //Romper las paredes falsas que estén en el rango
+                        this.espacio.eliminarCuerpoEstatico(this.paredesFalsas[j]);
+                        this.paredesFalsas.splice(j, 1);
+                        j = j-1;
+                    }
+                }
+                //Borrar la bomba
+                this.bombas.splice(i, 1);
+                i = i-1;
+            }
+        }
+
+
         // for (var i=0; i < this.disparosJugador.length; i++) {
         //     this.disparosJugador[i].actualizar();
         // }
@@ -105,6 +137,11 @@ class GameLayer extends Layer {
             this.tilesSuelos[i].dibujar();
         }
 
+        //Dibuja las bombas activas
+        for (var i=0; i < this.bombas.length; i++){
+            this.bombas[i].dibujar();
+        }
+
         this.escaleras.dibujar();
 
         this.jugador.dibujar();
@@ -118,11 +155,16 @@ class GameLayer extends Layer {
         for (var i=0; i < this.paredes.length; i++){
             this.paredes[i].dibujar();
         }
+        for (var i=0; i < this.paredesFalsas.length; i++){
+            this.paredesFalsas[i].dibujar();
+        }
+
         //Dibuja puertas
         for (var i=0; i < this.puertas.length; i++){
             this.puertas[i].dibujar();
         }
 
+        //Dibuja el contenido de las salas
         for(var i = 0; i < alto; i++){
             for(var j = 0; j < ancho; j++){
                 this.salas[i][j].dibujar();
@@ -131,14 +173,15 @@ class GameLayer extends Layer {
     }
 
     procesarControles( ){
-        // disparar
-        // if (  controles.disparo ){
-        //     var nuevoDisparo = this.jugador.disparar();
-        //     if ( nuevoDisparo != null ) {
-        //         this.disparosJugador.push(nuevoDisparo);
-        //     }
-        // }
-        //
+
+        //dejar bomba
+        if (  controles.ataque ){
+            var bomba = this.jugador.colocarBomba();
+            if ( bomba != null ) {
+                this.bombas.push(bomba);
+            }
+        }
+
 
         // Eje X
         if ( controles.moverX > 0 ){
@@ -186,11 +229,10 @@ class GameLayer extends Layer {
                     this.paredes.push(pared);
 
                 } else if((i%(salasy+1))==0 && this.puedeIrPuerta(j,longitudTotalX,salasx) || ((j%(salasx+1))==0 && this.puedeIrPuerta(i,longitudTotalY,salasy))){
+                    var suelo = new Fondo(imagenes.suelo, 64 + 16 * j, 64 + 16 * i);
+                    this.tilesSuelos.push(suelo);
                     //Puede haber puerta ente salas (o no).
                     if(Math.random() >= 0.3) {
-                        var suelo = new Fondo(imagenes.suelo, 64 + 16 * j, 64 + 16 * i);
-                        this.tilesSuelos.push(suelo);
-
                                                 //Math.random() >= 0.75
                         var puerta = new Puerta(false, imagenes.puerta_cerrada, 64 + 16 * j, 64 + 16 * i);
                         this.espacio.agregarCuerpoEstatico(puerta);
@@ -202,7 +244,7 @@ class GameLayer extends Layer {
                     } else {
                         var pared = new Pared(imagenes.pared, 64 + 16 * j, 64 + 16 * i);
                         this.espacio.agregarCuerpoEstatico(pared);
-                        this.paredes.push(pared);
+                        this.paredesFalsas.push(pared);
                     }
 
                 } else { //Si no hay pared hay suelo

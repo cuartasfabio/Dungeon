@@ -11,7 +11,7 @@ function onKeyDown( event) {
 
         switch ( event.keyCode ){
             case 32:
-                controles.disparo = true;
+                controles.ataque = true;
                 break;
             case 38:
                 controles.moverY = 1;
@@ -38,7 +38,7 @@ function onKeyUp( event) {
 
     switch ( event.keyCode ){
         case 32:
-            controles.disparo = false;
+            controles.ataque = false;
             break;
         case 38:
             if ( controles.moverY == 1 ){

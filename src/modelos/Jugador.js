@@ -6,26 +6,26 @@ class Jugador extends Modelo {
         this.vy = 0; // velocidadY
 
         // Disparo
-        this.cadenciaDisparo = 30;
-        this.tiempoDisparo = 0;
+        this.cadenciaBomba = 30;
+        this.tiempoParaColocarBomba = 0;
 
     }
 
     actualizar(){
         // Tiempo Disparo
-        if ( this.tiempoDisparo > 0 ) {
-            this.tiempoDisparo--;
+        if ( this.tiempoParaColocarBomba > 0 ) {
+            this.tiempoParaColocarBomba--;
         }
 
         this.x = this.x + this.vx;
         this.y = this.y + this.vy;
     }
 
-    disparar(){
-        if ( this.tiempoDisparo == 0) {
+    colocarBomba(){
+        if ( this.tiempoParaColocarBomba == 0) {
             // reiniciar Cadencia
-            this.tiempoDisparo = this.cadenciaDisparo;
-            return new DisparoJugador(this.x, this.y);
+            this.tiempoParaColocarBomba = this.cadenciaBomba;
+            return new Bomba(this.x, this.y);
         } else {
             return null;
         }
