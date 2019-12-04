@@ -15,7 +15,7 @@ class GameLayer extends Layer {
 
 
         //Rutas de las salas a cargar
-        this.txtSalas = ["res/sala0.txt","res/sala1.txt","res/sala2.txt","res/sala3.txt","res/sala4.txt"];
+        this.txtSalas = ["res/salas/sala0.txt","res/salas/sala1.txt","res/salas/sala2.txt","res/salas/sala3.txt","res/salas/sala4.txt"];
         //Lista de salas para saber si las salas se han creado ya o no.
         this.listaSalas = [];
         for(var i = 0; i < this.txtSalas.length; i++){
@@ -41,9 +41,18 @@ class GameLayer extends Layer {
         this.cargarMapa();
         this.asignarSalas();
         this.cargarJugador();
+        this.cargarEscaleras();
     }
 
     actualizar (){
+
+        if ( this.escaleras.colisiona(this.jugador)){
+            nivelActual++;
+            if (nivelActual > nivelMaximo){
+                nivelActual = 0;
+            }
+            this.iniciar();
+        }
 
         this.espacio.actualizar();
 
@@ -95,6 +104,8 @@ class GameLayer extends Layer {
         for (var i=0; i < this.tilesSuelos.length; i++){
             this.tilesSuelos[i].dibujar();
         }
+
+        this.escaleras.dibujar();
 
         this.jugador.dibujar();
 
@@ -180,7 +191,8 @@ class GameLayer extends Layer {
                         var suelo = new Fondo(imagenes.suelo, 64 + 16 * j, 64 + 16 * i);
                         this.tilesSuelos.push(suelo);
 
-                        var puerta = new Puerta(Math.random() >= 0.75, imagenes.puerta_cerrada, 64 + 16 * j, 64 + 16 * i);
+                                                //Math.random() >= 0.75
+                        var puerta = new Puerta(false, imagenes.puerta_cerrada, 64 + 16 * j, 64 + 16 * i);
                         this.espacio.agregarCuerpoEstatico(puerta);
                         this.puertas.push(puerta);
 
@@ -286,6 +298,10 @@ class GameLayer extends Layer {
                 sala.playerx = j * 16;
                 sala.playery = i * 16;
                 break;
+            case "S":
+                sala.escalerax = j * 16;
+                sala.escaleray = i * 16;
+                break;
         }
     }
 
@@ -294,6 +310,12 @@ class GameLayer extends Layer {
         var salaRandom = this.salas[Math.floor(Math.random()*(alto))][Math.floor(Math.random()*(ancho))];
         this.jugador = new Jugador( salaRandom.x + salaRandom.playerx,salaRandom.y + salaRandom.playery);
         this.espacio.agregarCuerpoDinamico(this.jugador);
+    }
+
+    cargarEscaleras(){
+        var salaRandom = this.salas[Math.floor(Math.random()*(alto))][Math.floor(Math.random()*(ancho))];
+        this.escaleras = new Escaleras( salaRandom.x + salaRandom.escalerax,salaRandom.y + salaRandom.escaleray);
+        this.espacio.agregarCuerpoDinamico(this.escaleras);
     }
 
 }

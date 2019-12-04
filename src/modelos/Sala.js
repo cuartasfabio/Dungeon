@@ -16,6 +16,10 @@ class Sala {
         this.playerx = 0;
         this.playery = 0;
 
+        //Posible posicion de la escalera al siguiente nivel
+        this.escalerax = 0;
+        this.escaleray = 0;
+
         //Inicializacion de la matriz de contenido de la sall
         this.matrizSala = [];
         for(var i = 0; i < salasy; i++){

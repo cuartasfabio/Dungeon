@@ -7,6 +7,8 @@ var escaladoMinimo = 1;
 
 // Capas
 var gameLayer;
+var nivelActual = 0;
+var nivelMaximo = 2;
 // Dimensiones
 var salasx = 9;
 var salasy = 7;
