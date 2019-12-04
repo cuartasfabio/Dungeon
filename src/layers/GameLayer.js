@@ -34,6 +34,7 @@ class GameLayer extends Layer {
         this.puertas = [];
 
         this.bombas = [];
+        this.llaves = [];
 
         //this.enemigos = [];
         //this.enemigos.push(new Enemigo(300,50));
@@ -73,9 +74,7 @@ class GameLayer extends Layer {
             }
         }
 
-
-
-
+        //Actualizar bombas
         for(var i = 0; i < this.bombas.length; i++){
             //Actualiza las bombas que esten activas
             this.bombas[i].actualizar();
@@ -140,6 +139,11 @@ class GameLayer extends Layer {
         //Dibuja las bombas activas
         for (var i=0; i < this.bombas.length; i++){
             this.bombas[i].dibujar();
+        }
+
+        //Dibujar llaves
+        for(var i = 0; i < this.llaves.length; i++){
+            this.llaves[i].dibujar();
         }
 
         this.escaleras.dibujar();
@@ -343,6 +347,12 @@ class GameLayer extends Layer {
             case "S":
                 sala.escalerax = j * 16;
                 sala.escaleray = i * 16;
+                break;
+            case "K":
+                var llave = new Llave(j * 16,i * 16);
+                this.espacio.agregarCuerpoDinamico(llave);
+                sala.matrizSala[i][j] = llave;
+                this.llaves.push(llave);
                 break;
         }
     }

@@ -5,7 +5,9 @@ class Jugador extends Modelo {
         this.vx = 0; // velocidadX
         this.vy = 0; // velocidadY
 
-        // Disparo
+        this.inventario = new Map();
+
+        // Cadencia bomba
         this.cadenciaBomba = 30;
         this.tiempoParaColocarBomba = 0;
 
