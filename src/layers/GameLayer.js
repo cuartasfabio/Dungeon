@@ -47,6 +47,8 @@ class GameLayer extends Layer {
         this.asignarSalas();
         this.cargarJugador();
         this.cargarEscaleras();
+
+        this.yaSeHaMovidoEnEsteEvento = false;
     }
 
     actualizar (){
@@ -204,6 +206,9 @@ class GameLayer extends Layer {
         //         this.salas[i][j].dibujar();
         //     }
         // }
+
+        //Dibujar la GUI del inventario
+        this.jugador.inventario.dibujar(640*0.5,480*0.9)
     }
 
     procesarControles( ){
@@ -234,6 +239,13 @@ class GameLayer extends Layer {
 
         } else {
             this.jugador.moverY(0);
+        }
+
+        //Moverse por el inventario
+        if((controles.moverInventario > 0 || controles.moverInventario < 0) && !this.yaSeHaMovidoEnEsteEvento){
+            this.jugador.inventario.cambiarSeleccion(controles.moverInventario);
+            this.yaSeHaMovidoEnEsteEvento = true;
+
         }
 
     }

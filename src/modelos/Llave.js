@@ -3,6 +3,7 @@ class Llave extends Modelo {
         super(imagenes.llave, x, y);
 
         this.ruta_gui = imagenes.llave_gui;
+        this.ruta_gui_alfa = imagenes.llave_gui_alfa;
     }
 
     usarItem(){
@@ -17,7 +18,6 @@ class Llave extends Modelo {
                 }
             }
         }
-        console.log("No puedes usar esto aquí!");
         return false;
     }
 }

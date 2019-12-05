@@ -10,6 +10,28 @@ class Inventario {
         //Inicialmente meto una bomba, llave y espada
         this.meterObjeto(new BombaItem(0,0));
         this.meterObjeto(new Llave(0,0));
+        this.meterObjeto(new Espada(0,0));
+
+        //Texto para representar la cantidad del objeto seleccionado
+        this.cantidad = new Texto();
+    }
+
+    //Cambia el item seleccionado del inventario, hacia la izquierda o derecha del array
+    cambiarSeleccion(dir){
+      if(dir > 0){
+          //se mueve a la derecha
+         if(this.objetoActual < this.listaObjetos.length - 1){
+             this.objetoActual++;
+         } else {
+             this.objetoActual = 0;
+         }
+      } else {  //se mueve a la izquierda
+          if(this.objetoActual > 0){
+              this.objetoActual--;
+          } else {
+              this.objetoActual = this.listaObjetos.length - 1;
+          }
+      }
     }
 
     //Mete el objeto pasado al inventario
@@ -24,7 +46,7 @@ class Inventario {
             //Lo mete en la lista
             this.listaObjetos.push(obj);
             //Lo mete en el Map con cantidad 1
-            this.cantidadObjetos.set(tipoObjeto,5);
+            this.cantidadObjetos.set(tipoObjeto,1);
         }
     }
 
@@ -52,8 +74,52 @@ class Inventario {
         }
     }
 
+    dibujar(x,y){
+        var caja = cache[imagenes.marco_gui];
+        contexto.drawImage(caja,
+            x - caja.width /2,
+            y - caja.height /2);
+        //Dibuja el item seleccionado   (usa otro sprite mas grande tambien asociado al modelo)
+        var item = cache[this.listaObjetos[this.objetoActual].ruta_gui];
+        contexto.drawImage(item,
+            x - item.width /2,
+            y - item.height /2);
 
+        //Dibuja el item siguiente (pero con algo menos de alfa y mas pequeño)
+        if(this.objetoActual < this.listaObjetos.length - 1){
+            var itemSiguiente = cache[this.listaObjetos[this.objetoActual+1].ruta_gui_alfa];
+        } else {
+            var itemSiguiente = cache[this.listaObjetos[0].ruta_gui_alfa];
+        }
+        contexto.drawImage(itemSiguiente,
+            x - itemSiguiente.width /2 + 74,
+            y - itemSiguiente.height /2 + 7,
+            itemSiguiente.width*0.7,
+            itemSiguiente.height*0.7);
+
+        //Dibuja el item anterior (pero con algo menos de alfa y mas pequeño)
+        if(this.objetoActual > 0){
+            var itemAnterior = cache[this.listaObjetos[this.objetoActual-1].ruta_gui_alfa];
+        } else {
+            var itemAnterior = cache[this.listaObjetos[this.listaObjetos.length-1].ruta_gui_alfa];
+        }
+        contexto.drawImage(itemAnterior,
+            x - itemAnterior.width /2 - 55,
+            y - itemAnterior.height /2 + 7,
+            itemAnterior.width*0.7,
+            itemAnterior.height*0.7);
+
+        //Dibuja la cantidad del item
+        this.cantidad.dibujar(this.cantidadObjetos.get(this.listaObjetos[this.objetoActual].constructor.name),
+            x + (caja.width/2)*0.3,y + (caja.height/2)*0.6);
+    }
 }
+
+
+
+
+
+
 
 class Jugador extends Modelo {
 

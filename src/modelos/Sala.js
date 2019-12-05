@@ -43,15 +43,15 @@ class Sala {
     }
 
     //El metodo dibujar dibuja todos los objetos contenidos en la sala
-    dibujar(){
-
-        for(var i = 0; i < salasy; i++){
-            for(var j = 0; j < salasx; j++){
-                //Al metodo dibujar de cada objeto se le pasan las coordenadas de la sala
-                //para poder sumarlas a su "x" e "y" relativas al origen de la sala.
-                if(this.matrizSala[i][j] != null) this.matrizSala[i][j].dibujar(this.x,this.y);
-            }
-        }
-    }
+    // dibujar(){
+    //
+    //     for(var i = 0; i < salasy; i++){
+    //         for(var j = 0; j < salasx; j++){
+    //             //Al metodo dibujar de cada objeto se le pasan las coordenadas de la sala
+    //             //para poder sumarlas a su "x" e "y" relativas al origen de la sala.
+    //             if(this.matrizSala[i][j] != null) this.matrizSala[i][j].dibujar(this.x,this.y);
+    //         }
+    //     }
+    // }
 
 }
