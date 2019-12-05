@@ -33,7 +33,8 @@ class GameLayer extends Layer {
         this.tilesSuelos = [];
         this.puertas = [];
 
-        this.bombas = [];
+        this.bombas = [];       //Estas son las bombas ya puestas por el jugador, explotan
+        this.bombaItems = [];   //Estas son las que puede recoger y guardar en el inventario
         this.llaves = [];
 
         //this.enemigos = [];
@@ -94,6 +95,30 @@ class GameLayer extends Layer {
             }
         }
 
+        //Recoger llaves
+        for(var i = 0; i < this.llaves.length; i++){
+           if(this.llaves[i].colisiona(this.jugador)){
+               //Se guarda la llave en el inventario
+              this.jugador.inventario.meterObjeto(this.llaves[i]);
+              //Se borra del espacio y de gamelayer
+              this.espacio.eliminarCuerpoDinamico(this.llaves[i]);
+              this.llaves.splice(i,1);
+              i = i - 1;
+           }
+        }
+
+        //Recoger bombas
+        for(var i = 0; i < this.bombaItems.length; i++){
+            if(this.bombaItems[i].colisiona(this.jugador)){
+                //Se guarda la bomba en el inventario
+                this.jugador.inventario.meterObjeto(this.bombaItems[i]);
+                //Se borra del espacio y de gamelayer
+                this.espacio.eliminarCuerpoDinamico(this.bombaItems[i]);
+                this.bombaItems.splice(i,1);
+                i = i - 1;
+            }
+        }
+
 
         // for (var i=0; i < this.disparosJugador.length; i++) {
         //     this.disparosJugador[i].actualizar();
@@ -141,6 +166,11 @@ class GameLayer extends Layer {
             this.bombas[i].dibujar();
         }
 
+        //Dibuja los items bomba
+        for (var i=0; i < this.bombaItems.length; i++){
+            this.bombaItems[i].dibujar();
+        }
+
         //Dibujar llaves
         for(var i = 0; i < this.llaves.length; i++){
             this.llaves[i].dibujar();
@@ -169,21 +199,18 @@ class GameLayer extends Layer {
         }
 
         //Dibuja el contenido de las salas
-        for(var i = 0; i < alto; i++){
-            for(var j = 0; j < ancho; j++){
-                this.salas[i][j].dibujar();
-            }
-        }
+        // for(var i = 0; i < alto; i++){
+        //     for(var j = 0; j < ancho; j++){
+        //         this.salas[i][j].dibujar();
+        //     }
+        // }
     }
 
     procesarControles( ){
 
-        //dejar bomba
-        if (  controles.ataque ){
-            var bomba = this.jugador.colocarBomba();
-            if ( bomba != null ) {
-                this.bombas.push(bomba);
-            }
+        //usar item seleccionado
+        if (controles.usarItem){
+            this.jugador.usarObjeto();
         }
 
 
@@ -238,7 +265,7 @@ class GameLayer extends Layer {
                     //Puede haber puerta ente salas (o no).
                     if(Math.random() >= 0.3) {
                                                 //Math.random() >= 0.75
-                        var puerta = new Puerta(false, imagenes.puerta_cerrada, 64 + 16 * j, 64 + 16 * i);
+                        var puerta = new Puerta(Math.random() >= 0.75, imagenes.puerta_cerrada, 64 + 16 * j, 64 + 16 * i);
                         this.espacio.agregarCuerpoEstatico(puerta);
                         this.puertas.push(puerta);
 
@@ -353,6 +380,12 @@ class GameLayer extends Layer {
                 this.espacio.agregarCuerpoDinamico(llave);
                 sala.matrizSala[i][j] = llave;
                 this.llaves.push(llave);
+                break;
+            case "B":
+                var bombai = new BombaItem(j * 16,i * 16);
+                this.espacio.agregarCuerpoDinamico(bombai);
+                sala.matrizSala[i][j] = bombai;
+                this.bombaItems.push(bombai);
                 break;
         }
     }

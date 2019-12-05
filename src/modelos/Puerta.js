@@ -20,7 +20,7 @@ class Puerta extends Modelo {
             }
         }
 
-        if(!this.tieneLlave && this.estaAbierta){
+        if(this.estaAbierta){
             if(this.imagen == cache[imagenes.puerta_cerrada]){
                 this.imagen = cache[imagenes.puerta_abierta];
             } else  if(this.imagen == cache[imagenes.puerta_cerrada_v]){
